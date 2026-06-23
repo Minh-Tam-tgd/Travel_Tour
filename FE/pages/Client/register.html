@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng ký</title>
+  <link rel="stylesheet" href="../../assets/css/auth.css" />
+</head>
+<body>
+  <div class="page-bg"></div>
+  <main class="auth-page">
+    <section class="auth-card">
+      <div class="brand-box">
+        <span class="brand-mark">T</span>
+        <div>
+          <h1>Travel Tour</h1>
+          <p>Tạo tài khoản và bắt đầu khám phá các tour hấp dẫn.</p>
+        </div>
+      </div>
+
+      <form id="registerForm" class="auth-form" autocomplete="off">
+        <h2>Đăng ký</h2>
+        <div class="form-group">
+          <label for="registerName">Họ và tên</label>
+          <input id="registerName" name="name" type="text" placeholder="nhập họ và tên" required />
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input id="registerEmail" name="email" type="email" placeholder="nhập email" required />
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Mật khẩu</label>
+          <input id="registerPassword" name="password" type="password" placeholder="tạo mật khẩu" required minlength="6" />
+        </div>
+        <div class="form-group">
+          <label for="registerConfirm">Xác nhận mật khẩu</label>
+          <input id="registerConfirm" name="confirmPassword" type="password" placeholder="nhập lại mật khẩu" required minlength="6" />
+        </div>
+        <button type="submit" class="btn-primary">Đăng ký</button>
+        <p class="form-footer">Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+      </form>
+    </section>
+  </main>
+  <script src="../../js/auth.js"></script>
+</body>
+</html>
