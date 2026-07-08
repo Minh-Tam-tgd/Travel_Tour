@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   "use strict";
 
   // ================= BIẾN TOÀN CỤC =================
-  const API_URL = "http://127.0.0.1:8000/api/client/nha-hang";
+  const API_URL = "http://127.0.0.1:5000/api/client/nha-hang";
   let all_nha_hang = [];
   let nha_hang = [];
   let limit = 8;

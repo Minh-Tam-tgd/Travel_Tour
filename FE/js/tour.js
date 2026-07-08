@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadData() {
-    fetch("http://127.0.0.1:8000/api/client/tour")
+    fetch("http://127.0.0.1:5000/api/client/tour")
       .then((res) => res.json())
       .then((res) => {
         allTours = res.data || demoTours;

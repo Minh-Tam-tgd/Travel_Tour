@@ -134,7 +134,7 @@
   function updateAuthState() {
     const user = (() => {
       try {
-        return JSON.parse(localStorage.getItem("nd_user"));
+        return JSON.parse(localStorage.getItem("user"));
       } catch {
         return null;
       }
@@ -147,19 +147,35 @@
         <span style="font-size:14px;font-weight:600;color:var(--text-secondary)">
           Xin chào, <strong style="color:var(--primary)">${user.name || "bạn"}</strong>
         </span>
-        <a href="profile.html" class="nav-avatar" id="nav-avatar-btn" title="Trang cá nhân">
-          ${(user.name || "U")[0].toUpperCase()}
+        <a href="booked.html" class="nav-avatar" title="Lịch sử đặt chỗ" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </a>
+        <a href="#" id="btnLogoutDesktop" class="nav-btn-outline" style="padding: 6px 12px; margin-left: 10px; font-size: 14px;">
+          Đăng xuất
         </a>
       `;
+      document.getElementById('btnLogoutDesktop').addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('user');
+          window.location.reload();
+      });
     }
 
     const actionsMobile = document.querySelector(".nav-mobile-actions");
     if (actionsMobile && user) {
       actionsMobile.innerHTML = `
-        <a href="profile.html" class="nav-btn-solid" style="flex:1;justify-content:center;">
-          <i class="fa-regular fa-user"></i> Trang cá nhân
+        <a href="booked.html" class="nav-btn-outline" style="flex:1;justify-content:center; margin-bottom: 8px;">
+          <i class="fa-solid fa-clock-rotate-left"></i> Đã đặt
+        </a>
+        <a href="#" id="btnLogoutMobile" class="nav-btn-solid" style="flex:1;justify-content:center;">
+          <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
         </a>
       `;
+      document.getElementById('btnLogoutMobile').addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('user');
+          window.location.reload();
+      });
     }
   }
 
