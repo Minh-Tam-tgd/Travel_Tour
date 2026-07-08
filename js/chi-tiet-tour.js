@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadTourDetails() {
     // Thử fetch từ API, nếu lỗi thì dùng demo
-    fetch(`http://127.0.0.1:8000/api/client/tour/${tourId}`)
+    fetch(`http://127.0.0.1:5000/api/client/tour/${tourId}`)
       .then((res) => {
         if (!res.ok) throw new Error("API chưa hỗ trợ lấy tour chi tiết");
         return res.json();
@@ -170,8 +170,48 @@ document.addEventListener("DOMContentLoaded", function () {
   // Submit Booking
   bookingForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    alert("Cảm ơn bạn! Yêu cầu đặt tour của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm nhất.");
-    // Thực tế sẽ gửi request POST lên server ở đây
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        alert("Vui lòng đăng nhập để đặt tour!");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const count = parseInt(guestCount.value) || 1;
+    const total = currentPrice * count;
+    const date = bookingDate?.value;
+
+    if (!date) {
+        alert("Vui lòng chọn ngày khởi hành!");
+        return;
+    }
+
+    fetch('http://127.0.0.1:5000/api/client/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: user.id,
+            tour_id: tourId || 1, // Fallback nếu không có ID
+            ngay_dat_di: date,
+            so_luong_khach: count,
+            tong_tien: total
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert("Cảm ơn bạn! Yêu cầu đặt tour của bạn đã được gửi thành công.");
+            bookingForm.reset();
+            updatePrice();
+            window.location.href = "booked.html";
+        } else {
+            alert(data.message || "Lỗi khi đặt tour");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Lỗi kết nối server");
+    });
   });
 
   loadTourDetails();

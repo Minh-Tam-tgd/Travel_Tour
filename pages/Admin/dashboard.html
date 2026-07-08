@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – ND Travel</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <style>
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .sidebar { width: 250px; height: 100vh; position: fixed; background: #343a40; color: white; padding-top: 20px; }
+    .sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 15px 20px; font-weight: 500; }
+    .sidebar a:hover, .sidebar a.active { background: #495057; color: white; border-left: 4px solid #0d6efd; }
+    .main-content { margin-left: 250px; padding: 30px; }
+    .card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); border-radius: 0.5rem; }
+    .nav-tabs .nav-link { color: #495057; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="text-center mb-4 px-3">
+      <h4 class="fw-bold text-white"><i class="fa-solid fa-plane-departure text-primary me-2"></i>ND Travel</h4>
+      <small class="text-muted">Quản trị hệ thống</small>
+    </div>
+    
+    <a href="#" class="active" onclick="switchTab('booking-tab', this)"><i class="fa-solid fa-list-check me-2"></i> Yêu cầu đặt chỗ</a>
+    <a href="#" onclick="switchTab('tour-tab', this)"><i class="fa-solid fa-map-location-dot me-2"></i> Quản lý Tour</a>
+    <a href="#" onclick="switchTab('restaurant-tab', this)"><i class="fa-solid fa-utensils me-2"></i> Quản lý Nhà hàng</a>
+    
+    <div class="position-absolute bottom-0 w-100 mb-3 text-center">
+      <hr class="border-secondary mx-3">
+      <a href="#" id="btn-logout" class="text-danger"><i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold m-0" id="page-title">Yêu cầu đặt chỗ</h2>
+      <div class="d-flex align-items-center">
+        <span class="me-3 fw-semibold">Xin chào, Admin!</span>
+        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">A</div>
+      </div>
+    </div>
+
+    <!-- Booking Tab -->
+    <div id="booking-tab" class="content-section">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Mã</th>
+                  <th>Khách hàng</th>
+                  <th>Dịch vụ</th>
+                  <th>Ngày đi</th>
+                  <th>Số lượng</th>
+                  <th>Tổng tiền</th>
+                  <th>Trạng thái</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="admin-booking-list">
+                <tr><td colspan="8" class="text-center">Đang tải...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tour Tab -->
+    <div id="tour-tab" class="content-section d-none">
+      <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="m-0 fw-bold">Danh sách Tour</h5>
+          <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Thêm mới</button>
+        </div>
+        <div class="card-body">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Tên Tour</th>
+                <th>Giá</th>
+                <th>Thời gian</th>
+                <th>Hoạt động</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tour-list">
+              <tr><td colspan="6" class="text-center">Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Restaurant Tab -->
+    <div id="restaurant-tab" class="content-section d-none">
+      <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="m-0 fw-bold">Danh sách Nhà hàng</h5>
+          <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Thêm mới</button>
+        </div>
+        <div class="card-body">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Tên Nhà hàng</th>
+                <th>Địa chỉ</th>
+                <th>Giá TB</th>
+                <th>Hoạt động</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="admin-restaurant-list">
+              <tr><td colspan="6" class="text-center">Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/dashboard.js"></script>
+</body>
+</html>
