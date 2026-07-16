@@ -15,7 +15,8 @@
     .sidebar a:hover, .sidebar a.active { background: #495057; color: white; border-left: 4px solid #0d6efd; }
     .main-content { margin-left: 250px; padding: 30px; }
     .card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); border-radius: 0.5rem; }
-    .nav-tabs .nav-link { color: #495057; font-weight: 600; }
+    .table img { object-fit: cover; border-radius: 5px; }
+    .form-label { font-weight: 600; font-size: 0.9em; }
   </style>
 </head>
 <body>
@@ -27,7 +28,7 @@
       <small class="text-muted">Quản trị hệ thống</small>
     </div>
     
-    <a href="#" class="active" onclick="switchTab('booking-tab', this)"><i class="fa-solid fa-list-check me-2"></i> Yêu cầu đặt chỗ</a>
+    <a href="#" class="active" onclick="switchTab('booking-tab', this)"><i class="fa-solid fa-list-check me-2"></i> Đơn Đặt Chỗ</a>
     <a href="#" onclick="switchTab('tour-tab', this)"><i class="fa-solid fa-map-location-dot me-2"></i> Quản lý Tour</a>
     <a href="#" onclick="switchTab('restaurant-tab', this)"><i class="fa-solid fa-utensils me-2"></i> Quản lý Nhà hàng</a>
     
@@ -42,7 +43,7 @@
     
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold m-0" id="page-title">Yêu cầu đặt chỗ</h2>
+      <h2 class="fw-bold m-0" id="page-title">Đơn Đặt Chỗ</h2>
       <div class="d-flex align-items-center">
         <span class="me-3 fw-semibold">Xin chào, Admin!</span>
         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">A</div>
@@ -61,8 +62,10 @@
                   <th>Khách hàng</th>
                   <th>Dịch vụ</th>
                   <th>Ngày đi</th>
-                  <th>Số lượng</th>
+                  <th>SL</th>
                   <th>Tổng tiền</th>
+                  <th>Đã thanh toán</th>
+                  <th>Còn lại</th>
                   <th>Trạng thái</th>
                   <th>Hành động</th>
                 </tr>
@@ -81,24 +84,28 @@
       <div class="card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
           <h5 class="m-0 fw-bold">Danh sách Tour</h5>
-          <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Thêm mới</button>
+          <button class="btn btn-primary btn-sm" onclick="openTourModal()"><i class="fa-solid fa-plus"></i> Thêm Tour Mới</button>
         </div>
         <div class="card-body">
-          <table class="table table-hover align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Tên Tour</th>
-                <th>Giá</th>
-                <th>Thời gian</th>
-                <th>Hoạt động</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="admin-tour-list">
-              <tr><td colspan="6" class="text-center">Đang tải...</td></tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle" style="font-size: 0.9em;">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Hình ảnh</th>
+                  <th>Tên Tour</th>
+                  <th>Hành trình</th>
+                  <th>TG / Ngày KH</th>
+                  <th>Giá gốc/Giá KM</th>
+                  <th>Hiển thị</th>
+                  <th style="min-width: 100px;">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tour-list">
+                <tr><td colspan="8" class="text-center">Đang tải...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -108,28 +115,230 @@
       <div class="card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
           <h5 class="m-0 fw-bold">Danh sách Nhà hàng</h5>
-          <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Thêm mới</button>
+          <button class="btn btn-primary btn-sm" onclick="openResModal()"><i class="fa-solid fa-plus"></i> Thêm Nhà hàng Mới</button>
         </div>
         <div class="card-body">
-          <table class="table table-hover align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Tên Nhà hàng</th>
-                <th>Địa chỉ</th>
-                <th>Giá TB</th>
-                <th>Hoạt động</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="admin-restaurant-list">
-              <tr><td colspan="6" class="text-center">Đang tải...</td></tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle" style="font-size: 0.9em;">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Hình ảnh</th>
+                  <th>Tên Nhà hàng</th>
+                  <th>Địa chỉ</th>
+                  <th>Giá TB</th>
+                  <th>Hiển thị</th>
+                  <th style="min-width: 100px;">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="admin-restaurant-list">
+                <tr><td colspan="7" class="text-center">Đang tải...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- Modal Tour -->
+  <div class="modal fade" id="tourModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="tourModalTitle">Thêm Tour</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="tourForm">
+            <input type="hidden" id="tour-id">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label">Tên Tour</label>
+                <input type="text" class="form-control" id="tour-name" required>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Link Hình ảnh</label>
+                <input type="text" class="form-control" id="tour-image" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Điểm đi</label>
+                <input type="text" class="form-control" id="tour-diemdi" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Điểm đến</label>
+                <input type="text" class="form-control" id="tour-diemden" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ngày khởi hành (Text)</label>
+                <input type="text" class="form-control" id="tour-date" placeholder="VD: 2026-10-10 hoặc Hàng ngày" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Thời gian</label>
+                <input type="text" class="form-control" id="tour-duration" placeholder="VD: 3N2Đ" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Giá cũ</label>
+                <input type="number" class="form-control" id="tour-oldprice" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Giá khuyến mãi (Giá mới)</label>
+                <input type="number" class="form-control bg-light" id="tour-newprice" readonly required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">% Giảm giá</label>
+                <input type="number" class="form-control" id="tour-discount" value="0">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Mô tả</label>
+                <textarea class="form-control" id="tour-desc" rows="3"></textarea>
+              </div>
+              <div class="col-md-12 border-top pt-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <label class="form-label m-0 fw-bold">Thư viện ảnh phụ (Gallery)</label>
+                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="addTourGalleryInput()"><i class="fa-solid fa-plus"></i> Thêm ảnh</button>
+                </div>
+                <div id="tour-gallery-container">
+                  <!-- Inputs will be added here dynamically -->
+                </div>
+              </div>
+            </div>
+            <div class="text-end mt-4">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Refund Modal -->
+  <div class="modal fade" id="adminRefundModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Chi tiết Yêu cầu Hoàn tiền</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning mb-3">
+            Vui lòng kiểm tra thông tin thanh toán và xử lý yêu cầu.
+          </div>
+          
+          <div id="admin-refund-payment-proof-container" class="mb-3 d-none text-center">
+            <h6 class="fw-bold text-start">Minh chứng thanh toán lúc đặt:</h6>
+            <img id="admin-refund-payment-proof" src="" class="img-fluid rounded border" style="max-height: 200px;">
+          </div>
+
+          <table class="table table-bordered">
+            <tbody>
+              <tr><th style="width: 150px;">Ngân hàng:</th><td id="admin-refund-bank" class="fw-bold">...</td></tr>
+              <tr><th>Số tài khoản:</th><td id="admin-refund-stk" class="fw-bold text-primary">...</td></tr>
+              <tr><th>Số CCCD:</th><td id="admin-refund-cccd">...</td></tr>
+              <tr><th>Số tiền hoàn:</th><td id="admin-refund-amount" class="fw-bold text-danger">...</td></tr>
+            </tbody>
+          </table>
+
+          <hr>
+          
+          <div class="row">
+            <div class="col-md-6 border-end">
+              <h6 class="fw-bold text-success mb-2">Duyệt Hoàn Tiền</h6>
+              <div class="mb-2">
+                <label class="form-label small">Minh chứng đã chuyển khoản <span class="text-danger">*</span></label>
+                <input type="file" class="form-control form-control-sm" id="admin-refund-proof-file" accept="image/*">
+              </div>
+              <div class="mb-2">
+                <label class="form-label small">Ghi chú</label>
+                <textarea class="form-control form-control-sm" id="admin-refund-note" rows="2"></textarea>
+              </div>
+              <button type="button" class="btn btn-success btn-sm w-100" id="btn-confirm-refund">Xác nhận Duyệt</button>
+            </div>
+            
+            <div class="col-md-6">
+              <h6 class="fw-bold text-danger mb-2">Từ chối Hoàn Tiền</h6>
+              <div class="mb-2">
+                <label class="form-label small">Lý do từ chối <span class="text-danger">*</span></label>
+                <textarea class="form-control form-control-sm" id="admin-reject-reason" rows="4"></textarea>
+              </div>
+              <button type="button" class="btn btn-danger btn-sm w-100" id="btn-reject-refund">Từ chối Yêu Cầu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Refund Detail Modal (Read Only) -->
+  <div class="modal fade" id="adminRefundDetailModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title">Chi tiết Xử lý Hoàn tiền</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="admin-refund-detail-content"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Restaurant -->
+  <div class="modal fade" id="resModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="resModalTitle">Thêm Nhà hàng</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="resForm">
+            <input type="hidden" id="res-id">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label">Tên Nhà hàng</label>
+                <input type="text" class="form-control" id="res-name" required>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Link Hình ảnh</label>
+                <input type="text" class="form-control" id="res-image" required>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Địa chỉ</label>
+                <input type="text" class="form-control" id="res-address" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Giá trung bình</label>
+                <input type="number" class="form-control" id="res-price" required>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Mô tả</label>
+                <textarea class="form-control" id="res-desc" rows="3"></textarea>
+              </div>
+              <div class="col-md-12 border-top pt-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <label class="form-label m-0 fw-bold">Thư viện ảnh phụ (Gallery)</label>
+                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="addResGalleryInput()"><i class="fa-solid fa-plus"></i> Thêm ảnh</button>
+                </div>
+                <div id="res-gallery-container">
+                  <!-- Inputs will be added here dynamically -->
+                </div>
+              </div>
+            </div>
+            <div class="text-end mt-4">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+              <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

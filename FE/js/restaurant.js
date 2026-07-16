@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const API_URL = "http://127.0.0.1:5000/api/client/nha-hang";
   let all_nha_hang = [];
   let nha_hang = [];
-  let limit = 8;
+  let limit = 9;
   let uniqueAddress = [];
 
   const demoNhaHang = [
@@ -88,17 +88,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchName = document.getElementById("search-name");
   const restaurantList = document.getElementById("restaurant-list");
   const noResult = document.getElementById("no-result");
-  const toggleLimitContainer = document.getElementById(
-    "toggle-limit-container",
-  );
+  const toggleLimitContainer = document.getElementById("toggle-limit-container");
   const toggleLimitBtn = document.getElementById("toggle-limit-btn");
-  const sliderContainer = document.getElementById("restaurant-slider");
-  const btnScrollLeft = document.getElementById("btn-scroll-left");
-  const btnScrollRight = document.getElementById("btn-scroll-right");
+  const btnReset = document.getElementById("btn-reset");
 
   // ================= HELPER FUNCTION =================
   // Chuyển tiếng Việt có dấu → không dấu
   function removeVietnamese(str) {
+    if (!str) return "";
     return str
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -125,7 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         renderAddressDropdown();
         renderList();
-        renderSlider();
       })
       .catch((err) => {
         console.error("Lỗi khi lấy dữ liệu, sử dụng dữ liệu demo:", err);
@@ -137,13 +133,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         renderAddressDropdown();
         renderList();
-        renderSlider();
       });
   }
 
   // ================= RENDER GIAO DIỆN =================
   function renderAddressDropdown() {
-    let optionsHtml = '<option value="">Tất cả nhà hàng</option>';
+    let optionsHtml = '<option value="">Tất cả khu vực</option>';
     uniqueAddress.forEach((address) => {
       optionsHtml += `<option value="${address}">${address}</option>`;
     });
@@ -168,21 +163,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     displayList.forEach((item) => {
       html += `
-            <div class="col-lg-3 mb-4">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                    <img src="${item.hinh_anh}" class="card-img-top" style="height: 200px; object-fit: cover" />
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 tour-card">
+                    <img src="${item.hinh_anh}" class="card-img-top" style="height: 200px; object-fit: cover" onerror="this.src='../../assets/images/buffet.jpg'" />
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between mb-2">
                             <p class="fw-semibold mb-0 text-truncate" title="${item.ten_nha_hang}">${item.ten_nha_hang}</p>
-                            <span class="fw-semibold text-warning ms-2 flex-shrink-0">4.9 ⭐</span>
+                            <span class="fw-semibold text-warning ms-2 flex-shrink-0"><i class="fa-solid fa-star"></i> 4.9</span>
                         </div>
                         <p class="text-muted small mb-2">
                             <i class="fa-solid fa-location-dot text-danger"></i> ${item.dia_chi}
                         </p>
-                        <p class="text-muted small flex-grow-1">${item.mo_ta || ""}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <p class="fw-bold text-secondary mb-0">${formatCurrency(item.gia_tien)} đ</p>
-                            <a href="nha-hang-chi-tiet.html?id=${item.id}" class="btn btn-primary btn-sm rounded-pill px-3">
+                        <p class="text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${item.mo_ta || "Khám phá không gian ẩm thực tuyệt vời với các món ăn hấp dẫn."}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <p class="fw-bold text-primary mb-0 fs-5">${formatCurrency(item.gia_tien)} đ</p>
+                            <a href="nha-hang-chi-tiet.html?id=${item.id}" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold">
                                 Chi Tiết
                             </a>
                         </div>
@@ -194,38 +189,13 @@ document.addEventListener("DOMContentLoaded", function () {
     restaurantList.innerHTML = html;
 
     // Xử lý nút Xem thêm / Thu gọn
-    if (nha_hang.length > 8) {
+    if (nha_hang.length > 9) {
       toggleLimitContainer.classList.remove("d-none");
       toggleLimitBtn.textContent =
         limit < nha_hang.length ? "Xem thêm" : "Thu gọn";
     } else {
       toggleLimitContainer.classList.add("d-none");
     }
-  }
-
-  function renderSlider() {
-    let html = "";
-    all_nha_hang.forEach((item) => {
-      html += `
-            <div class="col-8 col-sm-6 col-md-4 col-lg-3 p-0" style="min-width: 250px;">
-                <div class="card border-0 shadow-sm rounded-4 h-100 mx-2">
-                    <img src="${item.hinh_anh}" class="rounded-top-4" style="height: 150px; object-fit: cover" />
-                    <div class="card-body">
-                        <p class="fw-bold text-truncate" title="${item.ten_nha_hang}">${item.ten_nha_hang}</p>
-                        <p class="text-muted small text-truncate">
-                            <i class="fa-solid fa-location-dot text-danger"></i> ${item.dia_chi}
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <p class="text-secondary fw-bold mb-0">${formatCurrency(item.gia_tien)} đ</p>
-                            <a href="nha-hang-chi-tiet.html?id=${item.id}" class="btn btn-primary btn-sm rounded-pill px-3">
-                                Chi Tiết
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-    });
-    sliderContainer.innerHTML = html;
   }
 
   // ================= XỬ LÝ SỰ KIỆN LỌC =================
@@ -238,34 +208,34 @@ document.addEventListener("DOMContentLoaded", function () {
       const itemDiaChi = removeVietnamese(item.dia_chi);
 
       const matchTen = itemTen.includes(ten);
-      const matchDiaChi = diaChi ? itemDiaChi.includes(diaChi) : true;
+      const matchDiaChi = diaChi ? itemDiaChi === diaChi : true;
 
       return matchTen && matchDiaChi;
     });
 
-    limit = 8; // Reset lại limit mỗi khi tìm kiếm
+    limit = 9; // Reset lại limit mỗi khi tìm kiếm
     renderList();
   }
 
   // ================= GÁN EVENTS =================
   searchName.addEventListener("keyup", executeSearch);
   searchAddress.addEventListener("change", executeSearch);
+  
+  if(btnReset) {
+      btnReset.addEventListener("click", () => {
+        searchName.value = "";
+        searchAddress.value = "";
+        executeSearch();
+      });
+  }
 
   toggleLimitBtn.addEventListener("click", () => {
     if (limit < nha_hang.length) {
-      limit += 8;
+      limit += 9;
     } else {
-      limit = 8;
+      limit = 9;
     }
     renderList();
-  });
-
-  btnScrollLeft.addEventListener("click", () => {
-    sliderContainer.scrollLeft -= 300;
-  });
-
-  btnScrollRight.addEventListener("click", () => {
-    sliderContainer.scrollLeft += 300;
   });
 
   // ================= CHẠY KHỞI TẠO =================

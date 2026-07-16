@@ -25,7 +25,10 @@
               <th scope="col">Ngày đi/đến</th>
               <th scope="col">Số lượng</th>
               <th scope="col">Tổng tiền</th>
+              <th scope="col">Đã thanh toán</th>
+              <th scope="col">Còn lại</th>
               <th scope="col">Trạng thái</th>
+              <th scope="col">Hành động</th>
             </tr>
           </thead>
           <tbody id="booking-list">
@@ -34,6 +37,61 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Refund Modal -->
+  <div class="modal fade" id="refundModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Yêu cầu hoàn tiền</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="refundForm">
+            <input type="hidden" id="refund-booking-id">
+            <div class="mb-3">
+              <label class="form-label">Ngân hàng</label>
+              <input type="text" class="form-control" id="refund-bank" placeholder="VD: Vietcombank, Techcombank..." required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Số tài khoản</label>
+              <input type="text" class="form-control" id="refund-stk" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Số CCCD (Người đặt)</label>
+              <input type="number" class="form-control" id="refund-cccd" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-danger fw-bold">Mật khẩu xác nhận</label>
+              <input type="password" class="form-control" id="refund-password" placeholder="Nhập mật khẩu tài khoản của bạn" required>
+            </div>
+            <div class="text-end">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+              <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Refund Detail Modal -->
+  <div class="modal fade" id="refundDetailModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title">Chi tiết hoàn tiền</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="refund-detail-content"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
       </div>
     </div>
   </div>

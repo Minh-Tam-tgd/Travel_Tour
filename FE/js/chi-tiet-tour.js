@@ -19,8 +19,31 @@ document.addEventListener("DOMContentLoaded", function () {
   const totalPrice = document.getElementById("total-price");
   const bookingForm = document.getElementById("booking-form");
   const bookingDate = document.getElementById("booking-date");
+  const departureSelect = document.getElementById("departure-location");
+  const specificAddressGroup = document.getElementById("specific-address-group");
+  const discountMessage = document.getElementById("discount-message");
+  const paymentMethods = document.querySelectorAll('input[name="payment-method"]');
 
   let currentPrice = 0;
+  let finalCalculatedPrice = 0;
+  let destinationRegion = "";
+
+  const regionData = {
+    bac: ["hà nội", "hạ long", "quảng ninh", "sapa", "lào cai", "sơn la", "mộc châu", "bắc kạn", "hải phòng", "ninh bình", "vĩnh phúc", "phú thọ", "hà giang", "cao bằng", "lạng sơn", "tuyên quang", "thái nguyên", "bắc giang", "bắc ninh", "hải dương", "hưng yên", "hà nam", "nam định", "thái bình", "lai châu", "điện biên", "yên bái", "hòa bình"],
+    trung: ["đà nẵng", "hội an", "quảng nam", "huế", "thừa thiên huế", "nha trang", "khánh hòa", "quy nhơn", "bình định", "quảng bình", "hà tĩnh", "nghệ an", "thanh hóa", "quảng trị", "quảng ngãi", "phú yên", "ninh thuận", "bình thuận", "đà lạt", "lâm đồng", "đắk lắk", "buôn ma thuột", "đắk nông", "gia lai", "kon tum"],
+    nam: ["tp.hcm", "hồ chí minh", "phú quốc", "kiên giang", "bến tre", "cần thơ", "đồng tháp", "vĩnh long", "bình dương", "đồng nai", "bà rịa", "vũng tàu", "bình phước", "tây ninh", "long an", "tiền giang", "trà vinh", "hậu giang", "sóc trăng", "bạc liêu", "cà mau", "an giang"]
+  };
+
+  function getRegionFromLocation(locStr) {
+    if (!locStr) return "";
+    const loc = locStr.toLowerCase();
+    for (const [region, provinces] of Object.entries(regionData)) {
+      for (const p of provinces) {
+        if (loc.includes(p)) return region;
+      }
+    }
+    return "";
+  }
 
   // Set minimum date cho input date
   const today = new Date().toISOString().split('T')[0];
@@ -107,11 +130,58 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updatePrice() {
     const count = parseInt(guestCount.value) || 1;
-    const total = currentPrice * count;
+    let baseTotal = currentPrice * count;
+    
+    // Calculate regional discount
+    let originRegion = "";
+    if (departureSelect && departureSelect.options[departureSelect.selectedIndex]) {
+      originRegion = departureSelect.options[departureSelect.selectedIndex].getAttribute("data-region") || "";
+    }
+
+    let multiplier = 1;
+    let msg = "";
+    discountMessage.className = "small mt-1 fw-semibold"; // Reset class
+
+    if (originRegion && destinationRegion) {
+      if (originRegion === destinationRegion) {
+        multiplier = 0.8; // -20%
+        msg = `(Giảm 20% do khởi hành cùng Miền)`;
+        discountMessage.classList.add("text-success");
+      } else if ((originRegion === 'bac' && destinationRegion === 'nam') || (originRegion === 'nam' && destinationRegion === 'bac')) {
+        multiplier = 1.05; // +5%
+        msg = `(Phụ thu 5% tuyến Bắc - Nam)`;
+        discountMessage.classList.add("text-danger");
+      } else {
+        multiplier = 1; // 0%
+        msg = ``;
+      }
+    }
+
+    finalCalculatedPrice = baseTotal * multiplier;
+    discountMessage.textContent = msg;
+
+    let payMethod = document.querySelector('input[name="payment-method"]:checked').value;
+    let amountToPay = payMethod === 'deposit' ? finalCalculatedPrice * 0.1 : finalCalculatedPrice;
+
     summaryCount.textContent = count;
-    summaryPrice.textContent = formatMoney(total);
-    totalPrice.textContent = formatMoney(total);
+    summaryPrice.textContent = formatMoney(finalCalculatedPrice);
+    totalPrice.textContent = formatMoney(amountToPay) + (payMethod === 'deposit' ? ' (Cọc 10%)' : '');
   }
+
+  if (departureSelect) {
+    departureSelect.addEventListener("change", (e) => {
+      if (e.target.value) {
+        specificAddressGroup.classList.remove("d-none");
+      } else {
+        specificAddressGroup.classList.add("d-none");
+      }
+      updatePrice();
+    });
+  }
+
+  paymentMethods.forEach(radio => {
+    radio.addEventListener("change", updatePrice);
+  });
 
   function loadTourDetails() {
     // Thử fetch từ API, nếu lỗi thì dùng demo
@@ -141,11 +211,50 @@ document.addEventListener("DOMContentLoaded", function () {
     tourDuration.textContent = tour.thoi_gian;
     
     currentPrice = tour.gia_tien;
+    destinationRegion = getRegionFromLocation(tour.diem_den);
+    
     oldPriceEl.textContent = formatMoney(tour.gia_tien_cu);
     newPriceEl.textContent = formatMoney(tour.gia_tien);
     
+    // Render mô tả
+    const descEl = document.getElementById("tour-description");
+    if (descEl) {
+      descEl.textContent = tour.mo_ta || "Trải nghiệm hành trình tuyệt vời với những điểm đến hấp dẫn. Tận hưởng kỳ nghỉ dưỡng thoải mái, dịch vụ chuyên nghiệp và những kỷ niệm đáng nhớ.";
+    }
+    
     // Cập nhật ảnh chính (Giả sử fallback nếu ảnh lỗi sẽ được xử lý qua onerror bên HTML)
     mainImage.src = tour.hinh_anh;
+    
+    // Render Gallery
+    const wrapper = document.getElementById("gallery-wrapper");
+    const countEl = document.getElementById("gallery-count");
+    if (wrapper) {
+      wrapper.innerHTML = "";
+      let gallery = [tour.hinh_anh];
+      try {
+        const extraImages = JSON.parse(tour.thu_vien_anh || '[]');
+        gallery = gallery.concat(extraImages);
+      } catch(e) {}
+      
+      gallery.forEach((imgSrc, index) => {
+        const div = document.createElement("div");
+        div.style.flex = "0 0 calc(25% - 7.5px)";
+        div.innerHTML = `<img src="${imgSrc}" class="w-100 rounded-3 cursor-pointer small-img-thumbnail ${index===0?'active':''}" style="height: 80px; object-fit: cover;" onclick="changeMainImage(this.src, this)" onerror="this.src='https://thegioidohoa.com/wp-content/uploads/2018/12/thi%E1%BA%BFt-k%E1%BA%BF-banner-du-l%E1%BB%8Bch-5.jpg'"/>`;
+        wrapper.appendChild(div);
+      });
+      
+      if (countEl) countEl.innerHTML = `<small>${gallery.length} ảnh</small>`;
+      
+      const btnPrev = document.getElementById("btn-prev-img");
+      const btnNext = document.getElementById("btn-next-img");
+      if (gallery.length > 4) {
+        if(btnPrev) btnPrev.style.display = "block";
+        if(btnNext) btnNext.style.display = "block";
+      } else {
+        if(btnPrev) btnPrev.style.display = "none";
+        if(btnNext) btnNext.style.display = "none";
+      }
+    }
     
     updatePrice();
   }
@@ -178,40 +287,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const count = parseInt(guestCount.value) || 1;
-    const total = currentPrice * count;
+    const total = finalCalculatedPrice || (currentPrice * count);
     const date = bookingDate?.value;
+    const payMethod = document.querySelector('input[name="payment-method"]:checked').value;
+    const amountToPay = payMethod === 'deposit' ? total * 0.1 : total;
 
     if (!date) {
         alert("Vui lòng chọn ngày khởi hành!");
         return;
     }
+    
+    if (!departureSelect.value) {
+        alert("Vui lòng chọn nơi xuất phát!");
+        return;
+    }
 
-    fetch('http://127.0.0.1:5000/api/client/booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            user_id: user.id,
-            tour_id: tourId || 1, // Fallback nếu không có ID
-            ngay_dat_di: date,
-            so_luong_khach: count,
-            tong_tien: total
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert("Cảm ơn bạn! Yêu cầu đặt tour của bạn đã được gửi thành công.");
-            bookingForm.reset();
-            updatePrice();
-            window.location.href = "booked.html";
-        } else {
-            alert(data.message || "Lỗi khi đặt tour");
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Lỗi kết nối server");
-    });
+    const pendingBooking = {
+        user_id: user.id,
+        tour_id: tourId || 1,
+        restaurant_id: null,
+        type: 'tour',
+        ngay_dat_di: date,
+        so_luong_khach: count,
+        tong_tien: total, // Lưu tổng tiền thật vào DB
+        amount_to_pay: amountToPay, // Số tiền hiển thị trên mã QR
+        item_name: document.getElementById("tour-title").textContent
+    };
+
+    localStorage.setItem('pending_booking', JSON.stringify(pendingBooking));
+    window.location.href = "payment.html";
   });
 
   loadTourDetails();
@@ -226,4 +330,11 @@ window.changeMainImage = function(src, el) {
     img.classList.remove("active");
   });
   el.classList.add("active");
+}
+
+window.scrollGallery = function(dir) {
+  const wrapper = document.getElementById("gallery-wrapper");
+  if (!wrapper) return;
+  const scrollAmount = wrapper.clientWidth / 4 + 10;
+  wrapper.scrollBy({ left: dir * scrollAmount, behavior: "smooth" });
 }

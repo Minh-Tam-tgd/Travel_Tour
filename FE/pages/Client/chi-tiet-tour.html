@@ -33,21 +33,19 @@
         <!-- IMAGE GALLERY -->
         <div class="tour-gallery bg-white p-3 rounded-4 shadow-sm mb-4">
           <img id="main-image" src="" alt="Main Tour Image" class="w-100 rounded-3 mb-3" style="height: 400px; object-fit: cover;" onerror="this.src='https://thegioidohoa.com/wp-content/uploads/2018/12/thi%E1%BA%BFt-k%E1%BA%BF-banner-du-l%E1%BB%8Bch-5.jpg'" />
-          
-          <div class="row g-2" id="small-images">
-            <div class="col-3">
-              <img src="https://img3.thuthuatphanmem.vn/uploads/2019/10/14/banner-du-lich-da-lat_113653910.jpg" class="w-100 rounded-3 cursor-pointer small-img-thumbnail active" style="height: 80px; object-fit: cover;" onclick="changeMainImage(this.src, this)" />
+          <div class="position-relative mt-3">
+            <div id="gallery-wrapper" class="d-flex overflow-hidden" style="scroll-behavior: smooth; gap: 10px;">
+              <!-- JS will populate images here -->
             </div>
-            <div class="col-3">
-              <img src="https://travel.tnsdgroup.com/wp-content/uploads/2024/01/dich-vu-thiet-ke-banner-du-lich-chuyen-nghiep-tai-ha-noi4.jpg" class="w-100 rounded-3 cursor-pointer small-img-thumbnail" style="height: 80px; object-fit: cover;" onclick="changeMainImage(this.src, this)" />
-            </div>
-            <div class="col-3">
-              <img src="https://thegioidohoa.com/wp-content/uploads/2018/12/thi%E1%BA%BFt-k%E1%BA%BF-banner-du-l%E1%BB%8Bch-5.jpg" class="w-100 rounded-3 cursor-pointer small-img-thumbnail" style="height: 80px; object-fit: cover;" onclick="changeMainImage(this.src, this)" />
-            </div>
-            <div class="col-3">
-              <img src="../../assets/images/anh1.jpg" onerror="this.src='https://img3.thuthuatphanmem.vn/uploads/2019/10/14/banner-du-lich-da-lat_113653910.jpg'" class="w-100 rounded-3 cursor-pointer small-img-thumbnail" style="height: 80px; object-fit: cover;" onclick="changeMainImage(this.src, this)" />
-            </div>
+            <!-- Navigation buttons -->
+            <button class="btn btn-dark btn-sm position-absolute top-50 start-0 translate-middle-y rounded-circle opacity-75" id="btn-prev-img" style="display: none; left: 10px !important; z-index: 10;" onclick="scrollGallery(-1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-dark btn-sm position-absolute top-50 end-0 translate-middle-y rounded-circle opacity-75" id="btn-next-img" style="display: none; right: 10px !important; z-index: 10;" onclick="scrollGallery(1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
           </div>
+          <div class="text-end text-muted mt-2 small" id="gallery-count"></div>
         </div>
 
         <!-- TỔNG QUAN / GIỚI THIỆU -->
@@ -98,6 +96,77 @@
             </div>
 
             <div class="mb-3">
+              <label class="form-label fw-semibold">Nơi xuất phát (của bạn)</label>
+              <select class="form-select" id="departure-location" required>
+                <option value="" disabled selected>Chọn nơi xuất phát...</option>
+                <optgroup label="Miền Bắc">
+                  <option value="Hà Nội" data-region="bac">Hà Nội</option>
+                  <option value="Hải Phòng" data-region="bac">Hải Phòng</option>
+                  <option value="Quảng Ninh" data-region="bac">Quảng Ninh</option>
+                  <option value="Lào Cai" data-region="bac">Lào Cai (Sapa)</option>
+                  <option value="Sơn La" data-region="bac">Sơn La</option>
+                  <option value="Bắc Kạn" data-region="bac">Bắc Kạn</option>
+                  <option value="Ninh Bình" data-region="bac">Ninh Bình</option>
+                  <option value="Vĩnh Phúc" data-region="bac">Vĩnh Phúc</option>
+                  <option value="Hà Giang" data-region="bac">Hà Giang</option>
+                  <option value="Lạng Sơn" data-region="bac">Lạng Sơn</option>
+                  <option value="Thái Bình" data-region="bac">Thái Bình</option>
+                  <option value="Nam Định" data-region="bac">Nam Định</option>
+                </optgroup>
+                <optgroup label="Miền Trung & Tây Nguyên">
+                  <option value="Thanh Hóa" data-region="trung">Thanh Hóa</option>
+                  <option value="Nghệ An" data-region="trung">Nghệ An</option>
+                  <option value="Hà Tĩnh" data-region="trung">Hà Tĩnh</option>
+                  <option value="Quảng Bình" data-region="trung">Quảng Bình</option>
+                  <option value="Huế" data-region="trung">Thừa Thiên Huế</option>
+                  <option value="Đà Nẵng" data-region="trung">Đà Nẵng</option>
+                  <option value="Quảng Nam" data-region="trung">Quảng Nam (Hội An)</option>
+                  <option value="Bình Định" data-region="trung">Bình Định (Quy Nhơn)</option>
+                  <option value="Khánh Hòa" data-region="trung">Khánh Hòa (Nha Trang)</option>
+                  <option value="Lâm Đồng" data-region="trung">Lâm Đồng (Đà Lạt)</option>
+                  <option value="Đắk Lắk" data-region="trung">Đắk Lắk (Buôn Ma Thuột)</option>
+                  <option value="Phú Yên" data-region="trung">Phú Yên</option>
+                </optgroup>
+                <optgroup label="Miền Nam">
+                  <option value="TP.HCM" data-region="nam">TP.HCM</option>
+                  <option value="Bình Dương" data-region="nam">Bình Dương</option>
+                  <option value="Đồng Nai" data-region="nam">Đồng Nai</option>
+                  <option value="Bà Rịa" data-region="nam">Bà Rịa - Vũng Tàu</option>
+                  <option value="Tây Ninh" data-region="nam">Tây Ninh</option>
+                  <option value="Long An" data-region="nam">Long An</option>
+                  <option value="Tiền Giang" data-region="nam">Tiền Giang</option>
+                  <option value="Bến Tre" data-region="nam">Bến Tre</option>
+                  <option value="Vĩnh Long" data-region="nam">Vĩnh Long</option>
+                  <option value="Đồng Tháp" data-region="nam">Đồng Tháp</option>
+                  <option value="Cần Thơ" data-region="nam">Cần Thơ</option>
+                  <option value="Kiên Giang" data-region="nam">Kiên Giang (Phú Quốc)</option>
+                </optgroup>
+              </select>
+              <div id="discount-message" class="text-success small mt-1 fw-semibold"></div>
+            </div>
+            
+            <div class="mb-3 d-none" id="specific-address-group">
+              <label class="form-label fw-semibold">Địa chỉ đón cụ thể</label>
+              <input type="text" class="form-control" id="specific-address" placeholder="Nhập địa chỉ nhà, tên đường, quận...">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Phương thức thanh toán</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment-method" id="pay-full" value="full" checked>
+                <label class="form-check-label" for="pay-full">
+                  Thanh toán toàn bộ (100%)
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment-method" id="pay-deposit" value="deposit">
+                <label class="form-check-label" for="pay-deposit">
+                  Đặt cọc giữ chỗ (10%)
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3">
               <label class="form-label fw-semibold">Họ và tên người đặt</label>
               <input type="text" class="form-control" placeholder="Nhập họ và tên..." required>
             </div>
@@ -113,13 +182,13 @@
                 <span class="fw-semibold" id="summary-price">4,990,000đ</span>
               </div>
               <div class="d-flex justify-content-between align-items-center mt-2">
-                <span class="fw-bold fs-5">Tổng cộng</span>
+                <span class="fw-bold fs-5">Cần thanh toán</span>
                 <span class="fw-bold fs-4 text-danger" id="total-price">4,990,000đ</span>
               </div>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm" style="font-size: 1.1rem; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border: none;">
-              <i class="fa-solid fa-credit-card me-2"></i> Xác nhận thanh toán
+              <i class="fa-solid fa-credit-card me-2"></i> Tiến hành thanh toán
             </button>
           </form>
         </div>

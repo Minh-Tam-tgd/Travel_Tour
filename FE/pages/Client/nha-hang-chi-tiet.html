@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <link rel="stylesheet" href="../../assets/css/layout.css" />
+  <link rel="stylesheet" href="../../assets/css/chi-tiet-tour.css" />
 
   <script src="../../js/layout.js"></script>
 </head>
@@ -24,24 +25,51 @@
     </div>
 
     <div class="row g-4">
+      <!-- CỘT TRÁI: ẢNH + THÔNG TIN -->
       <div class="col-lg-8">
-        <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
-          <img id="main-image" src="" alt="Restaurant Image" class="w-100 rounded-3" style="height: 400px; object-fit: cover;" onerror="this.src='../../assets/images/buffet.jpg'" />
+        <!-- IMAGE GALLERY -->
+        <div class="tour-gallery bg-white p-3 rounded-4 shadow-sm mb-4">
+          <img id="main-image" src="" alt="Restaurant Image" class="w-100 rounded-3 mb-3" style="height: 400px; object-fit: cover;" onerror="this.src='../../assets/images/buffet.jpg'" />
+          <div class="position-relative mt-3">
+            <div id="gallery-wrapper" class="d-flex overflow-hidden" style="scroll-behavior: smooth; gap: 10px;">
+              <!-- JS will populate images here -->
+            </div>
+            <!-- Navigation buttons -->
+            <button class="btn btn-dark btn-sm position-absolute top-50 start-0 translate-middle-y rounded-circle opacity-75" id="btn-prev-img" style="display: none; left: 10px !important; z-index: 10;" onclick="scrollGallery(-1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-dark btn-sm position-absolute top-50 end-0 translate-middle-y rounded-circle opacity-75" id="btn-next-img" style="display: none; right: 10px !important; z-index: 10;" onclick="scrollGallery(1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="text-end text-muted mt-2 small" id="gallery-count"></div>
         </div>
 
         <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
           <h4 class="fw-bold mb-3 border-bottom pb-2">Giới thiệu Nhà Hàng</h4>
           <p id="res-description" class="text-secondary" style="line-height: 1.8;">...</p>
         </div>
+
+        <!-- QUY ĐỊNH / LƯU Ý -->
+        <div class="bg-white p-4 rounded-4 shadow-sm">
+          <h4 class="fw-bold mb-3 border-bottom pb-2">Quy định & Lưu ý</h4>
+          <ul class="text-secondary" style="line-height: 1.8;">
+            <li><strong>Giờ nhận bàn:</strong> Vui lòng đến đúng giờ đã đặt. Nhà hàng chỉ giữ bàn tối đa 15 phút so với giờ hẹn.</li>
+            <li><strong>Chính sách hủy:</strong> Hủy bàn trước 12 tiếng để không bị trừ phí cọc. Hủy cận giờ sẽ không được hoàn cọc (nếu có).</li>
+            <li><strong>Phụ thu:</strong> Nhà hàng có phụ thu khi mang đồ uống hoặc thức ăn từ bên ngoài vào (áp dụng tùy loại).</li>
+            <li><strong>Trẻ em:</strong> Có ghế ăn dặm cho trẻ em. Dưới 1m miễn phí vé buffet (nếu là nhà hàng buffet).</li>
+          </ul>
+        </div>
       </div>
 
-      <!-- BẢNG THANH TOÁN -->
+      <!-- CỘT PHẢI: BẢNG THANH TOÁN (BOOKING PANEL) -->
       <div class="col-lg-4">
-        <div class="bg-white p-4 rounded-4 shadow-sm position-sticky" style="top: 100px;">
+        <div class="booking-panel bg-white p-4 rounded-4 shadow-sm position-sticky" style="top: 100px;">
           <h4 class="fw-bold mb-3">Đặt Bàn Ngay</h4>
           
           <div class="price-box bg-light p-3 rounded-3 mb-4 text-center">
-            <span class="fs-3 fw-bold text-primary" id="price">...</span> <span class="text-muted">/ bàn</span>
+            <span class="text-muted text-decoration-line-through d-block d-none" id="old-price"></span>
+            <span class="fs-2 fw-bold text-primary" id="price">...</span> <span class="text-muted">/ bàn</span>
           </div>
 
           <form id="booking-form">
@@ -59,14 +87,34 @@
               </div>
             </div>
 
-            <div class="border-top pt-3 mb-4">
-              <div class="d-flex justify-content-between align-items-center mt-2">
-                <span class="fw-bold fs-5">Tổng cộng</span>
-                <span class="fw-bold fs-4 text-danger" id="total-price">0đ</span>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Phương thức thanh toán</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment-method" id="pay-full" value="full" checked>
+                <label class="form-check-label" for="pay-full">
+                  Thanh toán toàn bộ (100%)
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment-method" id="pay-deposit" value="deposit">
+                <label class="form-check-label" for="pay-deposit">
+                  Đặt cọc giữ chỗ (10%)
+                </label>
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm" style="font-size: 1.1rem;">
+            <div class="border-top pt-3 mb-4">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-secondary">Tạm tính (<span id="summary-count">1</span> bàn)</span>
+                <span class="fw-semibold" id="summary-price">...</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <span class="fw-bold fs-5">Cần thanh toán</span>
+                <span class="fw-bold fs-4 text-danger" id="total-price">...</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm" style="font-size: 1.1rem; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border: none;">
               <i class="fa-solid fa-credit-card me-2"></i> Xác nhận đặt bàn
             </button>
           </form>

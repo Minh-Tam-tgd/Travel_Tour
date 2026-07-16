@@ -157,6 +157,7 @@
       document.getElementById('btnLogoutDesktop').addEventListener('click', (e) => {
           e.preventDefault();
           localStorage.removeItem('user');
+          localStorage.removeItem('chatbot_history');
           window.location.reload();
       });
     }
@@ -174,6 +175,7 @@
       document.getElementById('btnLogoutMobile').addEventListener('click', (e) => {
           e.preventDefault();
           localStorage.removeItem('user');
+          localStorage.removeItem('chatbot_history');
           window.location.reload();
       });
     }
@@ -215,6 +217,22 @@
         initScrollEffect();
         initHamburger();
         updateAuthState();
+        
+        // 4. Inject Chatbot UI & JS
+        const currentUrl = window.location.href.toLowerCase();
+        if (!currentUrl.includes("login.html") && !currentUrl.includes("register.html") && !currentUrl.includes("dashboard.html")) {
+          const chatCircle = doc.querySelector("#chat-circle");
+          const chatBox = doc.querySelector("#chat-box-wrapper");
+          const chatStyle = doc.querySelector("style");
+          
+          if (chatStyle) document.head.appendChild(chatStyle);
+          if (chatCircle) document.body.appendChild(chatCircle);
+          if (chatBox) document.body.appendChild(chatBox);
+          
+          const script = document.createElement("script");
+          script.src = scriptDir + "chatbot.js";
+          document.body.appendChild(script);
+        }
       })
       .catch((error) => {
         console.error("Lỗi khi load layout:", error);
