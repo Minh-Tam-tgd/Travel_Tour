@@ -147,13 +147,13 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
         if (!['confirmed', 'cancelled', 'pending', 'refunded', 'refund_requested', 'rejected'].includes(status)) {
             return res.status(400).json({ status: 'error', message: 'Trạng thái không hợp lệ' });
         }
-        
+
         if (hoan_tien_info) {
             await pool.query('UPDATE bookings SET trang_thai=?, hoan_tien_info=? WHERE id=?', [status, JSON.stringify(hoan_tien_info), id]);
         } else {
             await pool.query('UPDATE bookings SET trang_thai=? WHERE id=?', [status, id]);
         }
-        
+
         res.json({ status: 'success', message: 'Đã cập nhật trạng thái' });
     } catch (error) {
         res.status(500).json({ status: 'error', message: 'Lỗi server' });
